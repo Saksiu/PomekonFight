@@ -15,20 +15,20 @@ class Creature{
 	int strength;
 	int lifePoints;
 	int experience;
-	double agility;
+	float agility;
 	
 
 	public:
-	Creature(std::string name,Force forceType,int strength,int lifePoints,double agility);
+	Creature(std::string name,Force forceType,int strength,int lifePoints,float agility);
 
 	std::string getName();
 	int getStrength();
 	int getlifePoints();
 	int getExperience();
-	double getAgility();
+	float getAgility();
 
 	std::string getForceTypeSymbol();
-	void setAgility(double newAgility);
+	void setAgility(float newAgility);
 	void setlifePoints(int newLifePoints);
 
 	std::string toString();

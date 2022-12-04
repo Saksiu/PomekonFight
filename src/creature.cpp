@@ -3,7 +3,7 @@
 #include <string>
 #include "creature.h"
 
-	Creature::Creature(std::string name,Force forceType,int strength,int lifePoints,double agility){
+	Creature::Creature(std::string name,Force forceType,int strength,int lifePoints,float agility){
 		this->name=name;
 		this->forceType=forceType;
 		this->strength=strength;
@@ -24,30 +24,30 @@
 	int Creature::getExperience(){
 		return experience;
 	}
-	double Creature::getAgility(){
+	float Creature::getAgility(){
 		return agility;
 	}
 
 	std::string Creature::getForceTypeSymbol(){
 		switch (forceType)
 		{
-		case Water: return "W";
+		case Water: return "Water";
 			break;
-		case Earth: return "E";
+		case Earth: return "Earth";
 			break;
-		case Air: return "A";
+		case Air: return "Air  ";
 			break;
-		case Fire: return "F";
+		case Fire: return "Fire";
 			break;
-		case Ice: return "I";
+		case Ice: return "Ice  ";
 			break;
-		case Steel: return "S";
+		case Steel: return "Steel";
 			break;
-		default: return "S";
+		default: return "Steel";
 			break;
 		}
 	}
-	void Creature::setAgility(double newAgility){
+	void Creature::setAgility(float newAgility){
 		agility=newAgility;
 	}
 	void Creature::setlifePoints(int newLifePoints){
@@ -55,6 +55,6 @@
 	}
 
 	std::string Creature::toString(){
-		return "name: "+name+" force: "+getForceTypeSymbol()+" strength: "+std::to_string(strength)+
-		"\n life points: "+std::to_string(lifePoints)+" agility: "+std::to_string(agility);
+		return "name: "+name+"  force: "+getForceTypeSymbol()+"  strength: "+std::to_string(strength)+
+		"  life points: "+std::to_string(lifePoints)+"  agility: "+std::to_string(agility);
 	}
