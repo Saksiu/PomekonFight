@@ -3,6 +3,9 @@
 #include <string>
 #include "creature.h"
 
+
+	Creature::Creature(){}
+
 	Creature::Creature(std::string name,Force forceType,int strength,int lifePoints,float agility){
 		this->name=name;
 		this->forceType=forceType;
@@ -50,8 +53,11 @@
 	void Creature::setAgility(float newAgility){
 		agility=newAgility;
 	}
+	//ERROR: CHANGES LOCAL VARIABLE, NOT ACTUAL HEALTH
+	//TODO: FIX
 	void Creature::setlifePoints(int newLifePoints){
-		lifePoints=newLifePoints;
+		std::cout<<"\nchanging "<<lifePoints<<" to "<<newLifePoints<<"\n";
+		this->lifePoints=newLifePoints;
 	}
 
 	std::string Creature::toString(){

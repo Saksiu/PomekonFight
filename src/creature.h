@@ -19,6 +19,7 @@ class Creature{
 	
 
 	public:
+	Creature();
 	Creature(std::string name,Force forceType,int strength,int lifePoints,float agility);
 
 	std::string getName();
@@ -26,6 +27,7 @@ class Creature{
 	int getlifePoints();
 	int getExperience();
 	float getAgility();
+	
 
 	std::string getForceTypeSymbol();
 	void setAgility(float newAgility);

@@ -4,24 +4,34 @@
 #include <string>
 #include <limits>
 #include "creature.h"
-#include "player.h"
+#include "character.h"
 /**
+ * 	PRIORITY:
+ * 	CHANGE SETTERS IN CHARACTER AND CREATURE CLASSES TO PASS REFERENCES INSTEAD OF LOCAL VALUES
+ *  DOESN'T UPDATE CREATURE HEALTH
  * 
  * 	TODO:	
- * 	1. MAIN GAMEPLAY LOGIC
+ * 	
+ * 	1. MAIN GAMEPLAY LOGIC - IN PROGRESS
  * 	2. UI FOR FIGHTS
  *  3. PLAYERSTATE SAVE/LOAD SYSTEM
- * 	4. EVERYTHING ELSE REQUIERED
- *
+ * 	4. DIFFICULTY
+ *	5. USERNAME
+ * 	6. EVERYTHING ELSE REQUIERED
  * 
  * 
  * 
+ * 	X. FIX MEMORY LEAKS - IN PROGRESS
+ * 	Y. COMMENTS!!!	- "WORKING" ON IT
  * 
- * 
+ * 	IDEAS:
+ *  Create new enemies and their creatures as neccessary scaling with difficulty
  * */
 
 std::vector<Creature> creatures;
-Player player=Player("Maks");
+Character player=Character("Maks");
+Character enemies[4];
+bool roundFinished;
 /**
  * Temporary fix to "clearing" the console window
  * Part of a soon-to-come GUI
@@ -43,12 +53,36 @@ void endGame(){	//TODO: ENDGAME
 	std::cout<<"Thank you for playing.\n";
 	exit(0);
 }
-
-void attack(){
-	std::cout<<"attacking!\n\n";
+void doDamage(int enemyNum){
+	enemies[enemyNum].getFocusedCreature().setlifePoints(2);
 }
-void changeCreature(){
-	std::cout<<"changing!\n\n";
+
+void attack(int enemyNum){
+	clearScreen();
+	std::cout<<"Your creature strength: "<<player.getFocusedCreature().getStrength();
+	std::cout<<"\nEnemy creature health before attack: "<<enemies[enemyNum].getFocusedCreature().getlifePoints();
+	doDamage(enemyNum);
+	std::cout<<"\nEnemy creature health after attack: "<<enemies[enemyNum].getFocusedCreature().getlifePoints();
+}
+
+void specialAttack(int enemyNum){
+	std::cout<<"special attack!\n\n";
+}
+
+//To put different creature for use in battle round
+int changeCreature(){
+	clearScreen();
+	std::cout<<"Choose creature: \n";
+	std::cout<<player.toString();
+	int choice;
+	std::cin>>choice;
+	if(choice>=1&&choice<=6)
+		return choice;
+	else{
+		std::cout<<"\nWrong choice!\n";
+		return changeCreature();
+	}
+	
 }
 void healCreature(){
 	std::cout<<"healing!\n\n";
@@ -57,24 +91,51 @@ void evolveCreature(){
 	std::cout<<"evolving!\n\n";
 }
 
+//Enemy changing their currently fighting creature to the first non-deafeted creature
+//returns negative value if all enemy creatures defeated (round won)
+int enemyDecideCreature(int enemyNum){
+	for(int i=0;i<4;i++)
+		if(enemies[enemyNum].getCreatureAt(i).getlifePoints()>=0)
+			return i;
+	return -1;
+}
+
+void checkIfRoundFinished(int roundNum){
+	//true if all enemy creatures have no lives(player won round)
+	if(enemyDecideCreature(roundNum)==-1)	
+		roundFinished=true;
+	else							//TODO: add return status for ending round (player lost)
+		roundFinished=false;
+}
 void startRound(int num){
-		using std::cout,std::cin;
-		char choice;
+	using std::cout,std::cin;
+	char choice;
+
+	roundFinished=false;
+	while(!roundFinished){
 		clearScreen();
+		enemies[num-1].putFocusOnCreature(enemyDecideCreature(num-1));
+
 		cout<<"Round No. "<<num;
-		cout<<"\n"<<player.toString()<<"\n\n";
-		cout<<"Choose action: \n";
-		cout<<"1.Attack\n2.Change creature\n3.Heal creature\n";
+		cout<<"\nYour creature:\n"<<player.getFocusedCreature().toString();
+		cout<<"\n\nEnemy creature:\n"<<enemies[num-1].getFocusedCreature().toString();
+
+		cout<<"\n\nChoose action: \n";
+		cout<<"1.Attack\n2.Special attack\n3.Change creature\n4.Heal creature\n";
+
 		cin>>choice;
 
 		switch (choice){		//TODO: wrong choice handler
 		case '1':
-			attack();
+			attack(num-1);
 			break;
 		case '2':
-			changeCreature();
+			specialAttack(num-1);
 			break;
 		case '3':
+			player.putFocusOnCreature(changeCreature()-1);
+			break;
+		case '4':
 			healCreature();
 			break;
 		default:
@@ -82,6 +143,8 @@ void startRound(int num){
 			cin.clear();
 		break;
 		}
+		checkIfRoundFinished(num-1);
+	}
 }
 
 void gameLoop(){
@@ -118,6 +181,18 @@ void gameLoop(){
 	}
 }
 
+void createEnemyCharacters(){
+	for(int i=0;i<std::size(enemies);i++){
+		enemies[i]=Character("Enemy_"+std::to_string(i+1));
+
+		for(int j=0;j<4;j++){
+			enemies[i].addCreature(creatures.at(j));
+			creatures.erase(creatures.begin()+j);
+		}
+	}
+	//WARNING: DELETES ALL REMAINING CREATURES FROM THE INITIAL RANDOM POOL
+	creatures.clear();
+}
 
 
 void chooseCreatures(){			/*TODO: FIX CHECKING FOR BAD INPUT :v*/
@@ -163,11 +238,11 @@ void chooseCreatures(){			/*TODO: FIX CHECKING FOR BAD INPUT :v*/
 	//Return not chosen creatures back to the pool
 	for(int i=0;i<playerPool.size();i++)
 		creatures.push_back(playerPool.at(i));
-
+	playerPool.clear();
 	//std::cout<<"\n"<<player.toString()<<"\n\n";
 }
 
-void createCreaturePool(){
+void createCreaturePool(){	//TODO: Better random creature creation tool (naming, balance)
 	srand(time(NULL));
 
 	Force tempForce;
@@ -196,16 +271,18 @@ void createCreaturePool(){
 		tempLife=rand()%70+80;
 		tempAgility=rand()%10+1-((float)(rand()%10+1)/10.0);
 
-		creatures.push_back(Creature("Creature_"+std::to_string(i+1),tempForce,tempStrength,tempLife,tempAgility));
+		creatures.push_back(
+			Creature("Creature_"+std::to_string(i+1),tempForce,tempStrength,tempLife,tempAgility));
 	}
 }
 
 void startGame(){
-	using std::cout,std::endl;
-	cout<<"Let's begin!"<<endl;
+	//using std::cout,std::endl;
+	std::cout<<"Let's begin!\n";
 	//Sleep(3000);		//for dramatic effect
 	createCreaturePool();
 	chooseCreatures();
+	createEnemyCharacters();
 	gameLoop();
 	endGame();
 }
