@@ -8,31 +8,32 @@
 enum Force{Water,Earth,Air,Fire,Ice,Steel};
 
 class Creature{
+	
+	
 
 	private:
+	static int counter;
 	std::string name;
 	Force forceType;
 	int strength;
 	int lifePoints;
 	int experience;
 	float agility;
-	
+
 
 	public:
 	Creature();
-	Creature(std::string name,Force forceType,int strength,int lifePoints,float agility);
 
-	std::string getName();
-	int getStrength();
-	int getlifePoints();
-	int getExperience();
-	float getAgility();
-	
+	std::string getName() const;
+	int getStrength() const;
+	int getlifePoints() const;
+	int getExperience() const;
+	float getAgility() const;
+	std::string getForceTypeSymbol() const;
 
-	std::string getForceTypeSymbol();
-	void setAgility(float newAgility);
-	void setlifePoints(int newLifePoints);
+	Creature& setAgility(float newAgility);
+	Creature& setlifePoints(int newLifePoints);
 
-	std::string toString();
+	void toString();
 };
 #endif

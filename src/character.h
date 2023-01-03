@@ -10,27 +10,31 @@
 class Character{
 
     private:
-    std::vector<Creature> characterCreatures;
+    Creature characterCreatures[6];
     std::string name;
-    int focusedCreatureIndex;
+    size_t focusedCreatureIndex;
+    void initializeCreatures();
 
 
     public:
     Character();
     Character(std::string name);
-    std::string getName();
-    std::vector<Creature> getCreatureVector();
-    int getFocusedCreatureIndex();
-    Creature getCreatureAt(int index);
-    Creature getFocusedCreature();
+    int enemyDecideCreature();
+    void playerChangeCreature();
+                                            //TODO: FINISH
+    void attack(Character &attacked);
+    void specialAttack(Character &Attacked);
+    void heal();
+    void evolve();
+    
 
-    void putFocusOnCreature(int index);
-    void setName(std::string newName);
-    void addCreature(Creature newCreature);
 
-    std::string toString();
-    std::string showCreatures();
 
+    Character setFocusedCreatureIndex(size_t newFocus);
+    size_t getFocusedCreatureIndex() const;
+    Creature& getCreature(size_t index);
+    void toString();
+    
 };
 
 #endif
