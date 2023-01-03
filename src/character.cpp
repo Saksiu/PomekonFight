@@ -91,6 +91,15 @@
             this->characterCreatures[this->getFocusedCreatureIndex()].getStrength());
     }
 
+    void Character::specialAttack(Character &Attacked){
+        
+    }
+    void Character::heal(){
+
+    }
+    void Character::evolve(){
+
+    }
 
     Character Character::setFocusedCreatureIndex(size_t newFocus){
         this->focusedCreatureIndex=newFocus;
