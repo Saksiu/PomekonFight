@@ -25,8 +25,10 @@
 			break;
 		}
 		this->strength=rand()%20+20;
-		this->lifePoints=rand()%70+80;
-		this->agility=rand()%10+1-((float)(rand()%10+1)/10.0);
+		
+		this->maxLifePoints=rand()%200+40;
+		this->lifePoints=maxLifePoints;
+		this->agility=rand()%99+1;
 		counter++;
 	}
 
@@ -36,8 +38,11 @@
 	int Creature::getStrength() const{
 		return strength;
 	}
-	int Creature::getlifePoints() const{
+	int Creature::getLifePoints() const{
 		return lifePoints;
+	}
+	int Creature::getMaxLifePoints() const{
+		return maxLifePoints;
 	}
 	int Creature::getExperience() const{
 		return experience;
@@ -70,7 +75,7 @@
 		return *this;
 	}
 	
-	Creature& Creature::setlifePoints(int newLifePoints){
+	Creature& Creature::setLifePoints(int newLifePoints){
 		std::cout<<"\nchanging "<<lifePoints<<" to "<<newLifePoints<<"\n";
 		this->lifePoints=newLifePoints;
 		return *this;

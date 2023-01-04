@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "z:/quickfix/PomekonFight/src",
-      "program": "z:/quickfix/PomekonFight/src/build/Debug/outDebug",
+      "cwd": "f:/STUDIA/3 sem/PJC/PJC_PRO/PomekonFight/src",
+      "program": "f:/STUDIA/3 sem/PJC/PJC_PRO/PomekonFight/src/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
