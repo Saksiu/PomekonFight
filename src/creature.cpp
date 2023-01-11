@@ -7,6 +7,8 @@
 
 	Creature::Creature(){
 		this->name=std::to_string(counter);
+		this->evolution=1;
+
 		int forcePointer=rand()%6+1;
 		switch (forcePointer){
 		case 1: this->forceType=Water;
@@ -29,6 +31,8 @@
 		this->maxLifePoints=rand()%200+40;
 		this->lifePoints=maxLifePoints;
 		this->agility=rand()%99+1;
+		this->experience=0;
+		this->maxExperience=1000;
 		counter++;
 	}
 
@@ -46,6 +50,9 @@
 	}
 	int Creature::getExperience() const{
 		return experience;
+	}
+	int Creature::getMaxExperience() const{
+		return maxExperience;
 	}
 	float Creature::getAgility() const{
 		return agility;
@@ -70,8 +77,21 @@
 			break;
 		}
 	}
+
+	Creature& Creature::setEvolution(){
+		this->evolution++;
+		return *this;
+	}
+
+	Creature& Creature::setName(std::string newName){
+		std::cout<<"\nchanging "<<name<<" to "<<newName<<"\n";
+		this->name=newName;
+		return *this;
+	}
+
 	Creature& Creature::setAgility(float newAgility){
-		agility=newAgility;
+		std::cout<<"\nchanging "<<agility<<" to "<<newAgility<<"\n";
+		this->agility=newAgility;
 		return *this;
 	}
 	
@@ -82,7 +102,7 @@
 	}
 	
 	void Creature::toString(){
-		using std::cout;
-		cout<<"name: Creature_"+name+"  force: "+getForceTypeSymbol()+"  strength: "+std::to_string(strength)+
-		"  life points: "+std::to_string(lifePoints)+"  agility: "+std::to_string(agility);
+		using std::cout,std::to_string;
+		cout<<"NAME: Creature_"+name+"  FRC: "+getForceTypeSymbol()+"  STR: "+to_string(strength)+
+		"  LP: "+to_string(lifePoints)+"  AGL: "+to_string(agility)+"  EXP: "+to_string(experience)+"/"+to_string(maxExperience);
 	}

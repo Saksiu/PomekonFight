@@ -110,27 +110,18 @@
         return this->getCreature(this->getFocusedCreatureIndex());
     }
 
+
+    //
     void Character::attack(Character &attacked){
-        attacked.characterCreatures[attacked.getFocusedCreatureIndex()].setLifePoints(
+        attacked.getCreatureInFocus().setLifePoints(
 
-            attacked.characterCreatures[attacked.getFocusedCreatureIndex()].getLifePoints()
+            attacked.getCreatureInFocus().getLifePoints()
             -
-            this->characterCreatures[this->getFocusedCreatureIndex()].getStrength());
+            this->getCreatureInFocus().getStrength());
     }
 
-    void Character::specialAttack(Character &Attacked){
+    void Character::specialAttack(Character &attacked){
         
-    }
-
-    void Character::heal(){
-        //float healingFactor=0.2;
-        //this->getCreatureInFocus().setLifePoints(
-        //this->getCreatureInFocus().getLifePoints()+
-        //this->getCreatureInFocus().getMaxLifePoints()*
-        //healingFactor);
-
-        this->getCreatureInFocus().setLifePoints(this->getCreatureInFocus().getLifePoints()+25);
-        //...
     }
 
     void Character::evolve(){
@@ -139,23 +130,23 @@
 /**
  *  ENEMY STATE FUNCTION
  *  BASICLOOP:
- *  1. IF enemy creature KILLED change to next one
- *  1. IF creature on 20% MAX health OR unable to withstand next attack/special attack from PLAYER FOCUSED  creature, HEAL
- *  2. ELSE IF ABLE to kill player creature using attack/special attack CHOOSE EASIEST OPTION to kill
+ *  1. IF ABLE to kill player creature using attack/special attack CHOOSE EASIEST OPTION to kill
  *  3. ELSE deal most damage possible in turn
- * 
  * 
  * IDEAS: make enum "state" and "personality" dictating enemy responses
 */
     void Character::enemyResponse(Character &player){
 
-        if(this->getCreatureInFocus().getLifePoints()<this->getCreatureInFocus().getMaxLifePoints()/5
-            ||this->getCreatureInFocus().getLifePoints()<player.getCreatureInFocus().getStrength()){
-            heal();
+        if(false){      //1.
+
         }
-        else{
+        else{           //2.
             this->attack(player);
         }
+    }
+    void Character::playerResetCreatures(){
+        for(size_t i=0;i<6;i++)
+            this->getCreature(i).setLifePoints(this->getCreature(i).getMaxLifePoints());
     }
 
     Character Character::setFocusedCreatureIndex(size_t newFocus){

@@ -103,9 +103,10 @@ void startRound(int num){
 		characters[num].getCreature(characters[num].getFocusedCreatureIndex()).toString();
 
 		cout<<"\n\nChoose action: \n";
-		cout<<"1.Attack\n2.Special attack\n3.Change creature\n4.Heal creature\n";
+		cout<<"1.Attack\n2.Special attack\n3.Change creature\n";
 
 		cin>>choice;
+		
 
 		switch (choice){		//TODO: wrong choice handler
 		case '1':
@@ -117,9 +118,6 @@ void startRound(int num){
 		case '3':
 			characters[0].playerChangeCreature();
 			break;
-		case '4':
-			characters[0].heal();
-			break;
 		default:
 			cout<<"\nWrong choice, try again: ";
 			cin.clear();
@@ -127,16 +125,20 @@ void startRound(int num){
 		}
 		characters[num].enemyResponse(characters[0]);		//WARNING: TEMPORARY; ENEMY TAKES TURN EVEN WHEN PLAYER INPUT IS WRONG
 	}
+	//end of round
+	characters[0].playerResetCreatures();
 }
 
 void gameLoop(){
+	using std::cout,std::cin;
+
 	char choice;
 	int roundNum=0;
-	using std::cout,std::cin;
 
 	while(roundNum<4){
 		//Sleep(1000);
 		clearScreen();
+
 		cout<<"\n";
 		characters[0].toString();
 		cout<<"\n\nChoose action: \n";

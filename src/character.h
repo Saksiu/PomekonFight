@@ -24,11 +24,11 @@ class Character{
     void playerChangeCreature();
                                             //TODO: FINISH
     void attack(Character &attacked);
-    void specialAttack(Character &Attacked);
-    void heal();
+    void specialAttack(Character &attacked);
+
     void evolve();
     void enemyResponse(Character &player);
-    int test(int index);    
+    void playerResetCreatures();
 
 
 
