@@ -6,12 +6,13 @@
 
 
     Character::Character(){}
-    Character::Character(std::string name, int index){
+    Character::Character(std::string name, size_t index){
         this->name=name;
         this->focusedCreatureIndex=0;
         initializeCreatures(index);
     }
-    void Character::initializeCreatures(int index){
+
+    void Character::initializeCreatures(size_t index){
         using std::cin,std::cout;
         const size_t poolSize=10;
         std::vector <Creature> playerPool;
@@ -27,7 +28,7 @@
 
                 for(int j=0;j<playerPool.size();j++){
                     cout<<"| "<<j+1<<". "; 
-                    playerPool[j].toString();
+                    cout<<playerPool[j].toString();
                     cout<<"\n|-------------------------------------------------------------------------------------\n";
                 }
                   
@@ -88,17 +89,16 @@
 
     void Character::playerChangeCreature(){
         bool badInput=true;
+        size_t choice;
 
         while(badInput){
-            std::cout<<"\n\n\n\n\n";    //evil again
-            std::cout<<"Choose creature: \n";
-            this->toString();
+            std::cout<<this->toString();
 
-            int choice;
+            std::cin.ignore(1000,'\n');
             std::cin>>choice;
             if(choice>=1&&choice<=6&&this->getCreature(choice-1).getLifePoints()>0){
-                focusedCreatureIndex=choice-1;
                 badInput=false;
+                this->setFocusedCreatureIndex(choice-1);
             }
             else{
                 std::cout<<"\nWrong choice!\n";
@@ -110,22 +110,103 @@
         return this->getCreature(this->getFocusedCreatureIndex());
     }
 
+    void Character::chooseEvolution(size_t creatureChoice){
+        int attributeChoice;
+        bool badInput=true;
+        int oldLifePoints=this->getCreature(creatureChoice).getMaxLifePoints();
+        int oldStrength=this->getCreature(creatureChoice).getStrength();
+        int oldAgility=this->getCreature(creatureChoice).getAgility();
 
-    //
-    void Character::attack(Character &attacked){
-        attacked.getCreatureInFocus().setLifePoints(
+        while(badInput){
 
-            attacked.getCreatureInFocus().getLifePoints()
-            -
-            this->getCreatureInFocus().getStrength());
+            std::cout<<"\n\n\n"<<this->getCreature(creatureChoice).toString();
+
+            std::cout<<"\nChoose attributes to upgrade:\n";
+
+            std::cout<<"\n1.LV + STR: "<<oldLifePoints<<" + "<<oldStrength;
+
+            std::cout<<"\n2.LV + AGL: "<<oldLifePoints<<" + "<<oldAgility;
+
+            std::cout<<"\n3.STR + AGL: "<<oldStrength<<" + "<<oldAgility<<std::endl;
+
+            std::cin.ignore(1000,'\n');
+            std::cin>>attributeChoice;
+
+            if(attributeChoice>=1&&attributeChoice<=3)
+                badInput=false;
+            else
+                std::cout<<"\nWrong choice!\n";
+        }
+
+        float multiplier=(rand()%20+20)/100.0;
+
+        if(attributeChoice!=3)  //life
+            this->getCreature(creatureChoice).setLifePoints(
+                this->getCreature(creatureChoice).getMaxLifePoints()*(1+multiplier));
+
+        if(attributeChoice!=1)  //agility
+            this->getCreature(creatureChoice).setAgility(
+                this->getCreature(creatureChoice).getAgility()*(1+multiplier));
+
+        if(attributeChoice!=2)  //strength
+            this->getCreature(creatureChoice).setStrength(
+                this->getCreature(creatureChoice).getStrength()*(1+multiplier));
+
+
+        this->getCreature(creatureChoice).resetExperience();
+        std::cout<<std::endl<<this->getCreature(creatureChoice).toString();
+    }
+
+    int Character::attack(Character &attacked){
+        int chance=rand()%99+1;
+        if(attacked.getCreatureInFocus().getAgility()>=chance){
+            this->getCreatureInFocus().addExperience(this->getCreatureInFocus().getAgility()*20);
+            return -1;
+        }
+        else{
+            attacked.getCreatureInFocus().setLifePoints(attacked.getCreatureInFocus().getLifePoints()-this->getCreatureInFocus().getStrength());
+
+            this->getCreatureInFocus().addExperience(this->getCreatureInFocus().getStrength()*2);
+            return 1;
+        }
+
+        
     }
 
     void Character::specialAttack(Character &attacked){
         
     }
 
-    void Character::evolve(){
+    void Character::evolveHandle(){
+        bool toEvolve=false,badInput=true;
+        size_t choice;
+        std::cout<<"Choose creature to evolve!\n";
+        for(size_t i=0;i<6;i++)
+            if(this->getCreature(i).getExperience()>=this->getCreature(i).getMaxExperience())
+                toEvolve=true;
+        
+        if(toEvolve){
 
+            while(badInput){
+                std::cout<<this->toString();
+
+                std::cin.ignore(1000,'\n');
+                std::cin>>choice;
+                choice-=1;
+                if(choice>=0&&choice<=5&&this->getCreature(choice).getExperience()>=this->getCreature(choice).getMaxExperience()){
+                    badInput=false;
+                    this->chooseEvolution(choice);
+                }
+                else{
+                   std::cout<<"\nWrong choice!\n";
+                }
+            }
+
+        }
+        else{
+            std::cout<<"You don't have any viable creatures to evolve!";
+        }
+            
     }
 /**
  *  ENEMY STATE FUNCTION
@@ -161,15 +242,16 @@
         return characterCreatures[index];
     }
 
-    void Character::toString(){
-        using std::cout;
+    std::string Character::toString(){
+        std::string string="";
         size_t iterator=4;
         if(name=="Player")
             iterator=6;
-        cout<<"\nname: "+name+"\nCreatures:\n";
+        string+="\nname: "+name+"\nCreatures:\n";
         for(size_t i=0;i<iterator;i++){
-            cout<<std::to_string(i+1)+". ";
-            characterCreatures[i].toString();
-            cout<<"\n\n";
+            string+=std::to_string(i+1)+". ";
+            string+=characterCreatures[i].toString();
+            string+="\n\n";
         }
+        return string;
     }

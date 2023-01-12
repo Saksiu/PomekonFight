@@ -62,7 +62,7 @@ class Creature{
 	int maxLifePoints;
 	int experience;
 	int maxExperience;
-	float agility;
+	int agility;
 
 
 	public:
@@ -74,15 +74,18 @@ class Creature{
 	int getMaxLifePoints() const;
 	int getExperience() const;
 	int getMaxExperience() const;
-	float getAgility() const;
+	int getAgility() const;
 	std::string getForceTypeSymbol() const;
 
-	Creature& setEvolution();
+	Creature& resetExperience();
 
+	Creature& addExperience(int expGained);
 	Creature& setName(std::string newName);
-	Creature& setAgility(float newAgility);
+	Creature& setAgility(int newAgility);
 	Creature& setLifePoints(int newLifePoints);
+	Creature& setMaxLifePoints(int newMaxLifePoints);
+	Creature& setStrength(int newStrength);
 
-	void toString();
+	std::string toString();
 };
 #endif

@@ -40,15 +40,15 @@ Character characters[5];
  * 
 */
 void clearScreen(){
-	//for(size_t i=0;i<30;i++)
-	//	std::cout<<std::endl;
-	system("cls");
+	for(size_t i=0;i<20;i++)
+		std::cout<<std::endl;
+	//Sleep(3000);
+	//system("cls");
 	std::cin.ignore(1000,'\n');
 }
 void save(){	//TODO: SAVE GAME STATE;
 
 }
-
 	/**
 	 * STATES:
 	 * 0- player saved and exited GAME NOT FINISHED
@@ -60,17 +60,17 @@ void endGame(int state){	//TODO: ENDGAME
 	clearScreen();
 	switch(state){
 		case 0:
-		std::cout<<"Game saved! See you soon!";
-		break;
+			std::cout<<"Game saved! See you soon!";
+			break;
 		case 1:
-		std::cout<<"Game over! You lost!";
-		break;
+			std::cout<<"Game over! You lost!";
+			break;
 		case 2:
-		std::cout<<"Good job! You won the game!\n You are the champion!";
-		break;
+			std::cout<<"Good job! You won the game!\n You are the champion!";
+			break;
 		default:
-		std::cout<<"Error: this shouldn't appear";
-		break;
+			std::cout<<"Error: this shouldn't appear";
+			break;
 	}
 	std::cout<<"\nThank you for playing.\n";
 	exit(0);
@@ -90,17 +90,17 @@ void startRound(int num){
 			endGame(1);
 		}
 		else if(characters[0].chooseNextValidCreature(0)==0){
-			cout<<"Your creature died!\n";
+			cout<<"Your creature died!\n Choose next one to fight!";
 			characters[0].playerChangeCreature();
 		}
 
 		clearScreen();
 		cout<<"Round No. "<<num;
 		cout<<"\nYour creature:\n";
-		characters[0].getCreature(characters[0].getFocusedCreatureIndex()).toString();
+		cout<<characters[0].getCreature(characters[0].getFocusedCreatureIndex()).toString();
 
 		cout<<"\n\nEnemy creature:\n";
-		characters[num].getCreature(characters[num].getFocusedCreatureIndex()).toString();
+		cout<<characters[num].getCreature(characters[num].getFocusedCreatureIndex()).toString();
 
 		cout<<"\n\nChoose action: \n";
 		cout<<"1.Attack\n2.Special attack\n3.Change creature\n";
@@ -110,20 +110,23 @@ void startRound(int num){
 
 		switch (choice){		//TODO: wrong choice handler
 		case '1':
-			characters[0].attack(characters[num]);
+			std::cout<<(characters[0].attack(characters[num])>0?"Success!":"Missed!");
+			characters[num].enemyResponse(characters[0]);
 			break;
 		case '2':
 			characters[0].specialAttack(characters[num]);
+			characters[num].enemyResponse(characters[0]);
 			break;
 		case '3':
+			cout<<"Choose creature!\n";
 			characters[0].playerChangeCreature();
+			characters[num].enemyResponse(characters[0]);
 			break;
 		default:
 			cout<<"\nWrong choice, try again: ";
 			cin.clear();
 		break;
 		}
-		characters[num].enemyResponse(characters[0]);		//WARNING: TEMPORARY; ENEMY TAKES TURN EVEN WHEN PLAYER INPUT IS WRONG
 	}
 	//end of round
 	characters[0].playerResetCreatures();
@@ -140,7 +143,7 @@ void gameLoop(){
 		clearScreen();
 
 		cout<<"\n";
-		characters[0].toString();
+		cout<<characters[0].toString();
 		cout<<"\n\nChoose action: \n";
 		cout<<"1.Start next round\n2.Evolve creature\n3.Save and Quit\n";
 		cin>>choice;
@@ -151,7 +154,7 @@ void gameLoop(){
 			startRound(roundNum);
 			break;
 		case '2':
-			characters[0].evolve();
+			characters[0].evolveHandle();
 			break;
 		case '3':
 			save();
@@ -164,7 +167,7 @@ void gameLoop(){
 		}
 	}
 }
-		
+
 
 void initializeCharacters(){
 	characters[0]=Character("Player",0);

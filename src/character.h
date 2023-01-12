@@ -13,20 +13,22 @@ class Character{
     Creature characterCreatures[6];
     std::string name;
     size_t focusedCreatureIndex;
-    void initializeCreatures(int index);
+
+    void initializeCreatures(size_t index);
     Creature& getCreatureInFocus();
+    void chooseEvolution(size_t choice);
 
 
     public:
     Character();
-    Character(std::string name, int index);
+    Character(std::string name, size_t index);
     int chooseNextValidCreature(int index);
     void playerChangeCreature();
                                             //TODO: FINISH
-    void attack(Character &attacked);
+    int attack(Character &attacked);
     void specialAttack(Character &attacked);
 
-    void evolve();
+    void evolveHandle();
     void enemyResponse(Character &player);
     void playerResetCreatures();
 
@@ -35,7 +37,7 @@ class Character{
     Character setFocusedCreatureIndex(size_t newFocus);
     size_t getFocusedCreatureIndex() const;
     Creature& getCreature(size_t index);
-    void toString();
+    std::string toString();
     
 };
 

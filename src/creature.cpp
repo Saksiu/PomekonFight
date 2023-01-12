@@ -30,7 +30,7 @@
 		
 		this->maxLifePoints=rand()%200+40;
 		this->lifePoints=maxLifePoints;
-		this->agility=rand()%99+1;
+		this->agility=rand()%20+5;
 		this->experience=0;
 		this->maxExperience=1000;
 		counter++;
@@ -54,7 +54,7 @@
 	int Creature::getMaxExperience() const{
 		return maxExperience;
 	}
-	float Creature::getAgility() const{
+	int Creature::getAgility() const{
 		return agility;
 	}
 
@@ -78,8 +78,10 @@
 		}
 	}
 
-	Creature& Creature::setEvolution(){
+	Creature& Creature::resetExperience(){
 		this->evolution++;
+		this->experience-=this->maxExperience;
+		this->maxExperience+=this->maxExperience/2;
 		return *this;
 	}
 
@@ -89,7 +91,13 @@
 		return *this;
 	}
 
-	Creature& Creature::setAgility(float newAgility){
+	Creature& Creature::addExperience(int expGained){
+		std::cout<<"\nchanging "<<experience<<" to "<<expGained<<"\n";
+		this->experience+=expGained;
+		return *this;
+	}
+
+	Creature& Creature::setAgility(int newAgility){
 		std::cout<<"\nchanging "<<agility<<" to "<<newAgility<<"\n";
 		this->agility=newAgility;
 		return *this;
@@ -100,9 +108,20 @@
 		this->lifePoints=newLifePoints;
 		return *this;
 	}
+	Creature& Creature::setMaxLifePoints(int newMaxLifePoints){
+		std::cout<<"\nchanging "<<maxLifePoints<<" to "<<newMaxLifePoints<<"\n";
+		this->maxLifePoints=newMaxLifePoints;
+		return *this;
+	}
+
+	Creature& Creature::setStrength(int newStrength){
+		std::cout<<"\nchanging "<<strength<<" to "<<newStrength<<"\n";
+		this->strength=newStrength;
+		return *this;
+	}
 	
-	void Creature::toString(){
-		using std::cout,std::to_string;
-		cout<<"NAME: Creature_"+name+"  FRC: "+getForceTypeSymbol()+"  STR: "+to_string(strength)+
-		"  LP: "+to_string(lifePoints)+"  AGL: "+to_string(agility)+"  EXP: "+to_string(experience)+"/"+to_string(maxExperience);
+	std::string Creature::toString(){
+		using std::to_string;
+		return "Creature_"+name+"  FRC: "+getForceTypeSymbol()+
+		"  LV: "+to_string(lifePoints)+"  STR: "+to_string(strength)+"  AGL: "+to_string(agility)+"  EXP: "+to_string(experience)+"/"+to_string(maxExperience);
 	}
