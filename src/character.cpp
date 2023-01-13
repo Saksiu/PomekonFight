@@ -26,10 +26,11 @@
 	        for(int i=0;i<6;i++){
                 cout<<"\nChoose your Creature ("<<i+1<<" out of 6):\n";
 
+                cout<<"\n|--------------------------------------------------------------------------|\n";
                 for(int j=0;j<playerPool.size();j++){
                     cout<<"| "<<j+1<<". "; 
                     cout<<playerPool[j].toString();
-                    cout<<"\n|-------------------------------------------------------------------------------------\n";
+                    cout<<"\n|--------------------------------------------------------------------------|\n";
                 }
                   
                 cout<<"\n";
@@ -62,7 +63,7 @@
      * -1  IF last enemy creature is DEAD (round lost for player or enemy)
     */
 
-    int Character::chooseNextValidCreature(int index){
+    /*int Character::chooseNextValidCreature(int index){
         if(this->getCreatureInFocus().getLifePoints()>0) //in focus is alive all good
             return 1;
 
@@ -85,6 +86,21 @@
         }
         //there is no replacement
         return -1;
+    }*/
+
+    /**
+     * RETURNS:
+     * position of first alive creature from the list OR -1, if none found
+    */
+    int Character::firstValidCreature(size_t index){
+        size_t iterator=4;
+        if(index==0)
+            iterator==6;
+        for(size_t i=0;i<iterator;i++)
+            if(this->getCreature(i).getLifePoints()>0)
+                return i;
+        std::cout<<"all dead!";
+        return -1;
     }
 
     void Character::playerChangeCreature(){
@@ -106,6 +122,20 @@
         }
     }
 
+    /**
+     * CALLED:
+     * at the start of the turn in round
+     * FUNCTION:
+     * if:
+     * current one died AND no replacement
+     * 
+    */
+    void Character::enemyChangeCreatureIfDead(size_t index){
+        if(this->getCreatureInFocus().getLifePoints()<=0&&this->getFocusedCreatureIndex()<3){
+            this->focusedCreatureIndex++;
+            std::cout<<"\nEnemy creature died!\n";
+        }
+    }
     Creature& Character::getCreatureInFocus(){
         return this->getCreature(this->getFocusedCreatureIndex());
     }
@@ -123,11 +153,11 @@
 
             std::cout<<"\nChoose attributes to upgrade:\n";
 
-            std::cout<<"\n1.LV + STR: "<<oldLifePoints<<" + "<<oldStrength;
+            std::cout<<"\n1.LV + STR: ";
 
-            std::cout<<"\n2.LV + AGL: "<<oldLifePoints<<" + "<<oldAgility;
+            std::cout<<"\n2.LV + AGL";
 
-            std::cout<<"\n3.STR + AGL: "<<oldStrength<<" + "<<oldAgility<<std::endl;
+            std::cout<<"\n3.STR + AGL:\n";
 
             std::cin.ignore(1000,'\n');
             std::cin>>attributeChoice;
@@ -140,10 +170,12 @@
 
         float multiplier=(rand()%35+20)/100.0;
 
-        if(attributeChoice!=3)  //life
-            this->getCreature(creatureChoice).setLifePoints(
+        if(attributeChoice!=3){  //life
+            this->getCreature(creatureChoice).setMaxLifePoints(
                 this->getCreature(creatureChoice).getMaxLifePoints()*(1+multiplier));
-
+            this->getCreature(creatureChoice).setLifePoints(
+                this->getCreature(creatureChoice).getMaxLifePoints());
+        }
         if(attributeChoice!=1)  //agility
             this->getCreature(creatureChoice).setAgility(
                 this->getCreature(creatureChoice).getAgility()*(1+multiplier));
@@ -157,24 +189,125 @@
         std::cout<<std::endl<<this->getCreature(creatureChoice).toString();
     }
 
-    int Character::attack(Character &attacked){
-        return this->getCreatureInFocus().attack(attacked.getCreatureInFocus());
+    void Character::attack(Character &attacked){
+        int chance=rand()%99+1;
+        std::cout<<" Attack ";
+        if(attacked.getCreatureInFocus().getAgility()>=chance){
+            std::cout<<"Missed!";
+            this->getCreatureInFocus().addExperience(this->getCreatureInFocus().getAgility()*20);
+        }
+        else{
+            std::cout<<"Hit!";
+            attacked.getCreatureInFocus().setLifePoints(
+                attacked.getCreatureInFocus().getLifePoints()-this->getCreatureInFocus().getStrength());
+			this->getCreatureInFocus().addExperience(this->getCreatureInFocus().getStrength()*2);
+        }
+        std::cout<<"\n";
     }
 
-    void Character::specialAttack(Character &attacked){
-        this->getCreatureInFocus().specialAttack(attacked.getCreatureInFocus());
+
+    /**
+     * RETURNS:
+     * 0 IF NO ABILITY USES LEFT
+     * 1 IF ABILITY USED
+     * FUNCTION:
+     * Based on force type of an attacked and attacking creature, will do stuff
+    */
+    int Character::specialAttack(Character &attacked){
+        std::cout<<" special attack\n";
+        if(this->getCreatureInFocus().getAbilityUses()<1){
+            std::cout<<"This creature is very tired, and can't use a special ability until next round";
+            return 0;
+        }
+            
+        this->getCreatureInFocus().setAbilityUses(this->getCreatureInFocus().getAbilityUses()-1);
+
+        Force atkF=this->getCreatureInFocus().getForceType();
+        Force defF=attacked.getCreatureInFocus().getForceType();
+
+        //0: no interaction
+        //1: weak interaction
+        //2: strong interaction
+        int interactionState;
+        std::cout<<"Using "+this->getCreatureInFocus().getForceTypeSymbol();
+        switch(atkF){
+            case Water:
+            switch(defF){
+                case Water: interactionState=1; break;
+                case Earth: interactionState=2; break;
+                case Air: interactionState=-0; break;
+                case Fire: interactionState=2; break;
+                case Ice: interactionState=0; break;
+                case Steel: interactionState=0; break;
+            }break;
+            case Earth:
+            switch(defF){
+                case Water: interactionState=0; break;
+                case Earth: interactionState=0; break;
+                case Air: interactionState=1; break;
+                case Fire: interactionState=2; break;
+                case Ice: interactionState=2; break;
+                case Steel: interactionState=2; break;
+            }break;
+            case Air:
+            switch(defF){
+                case Water: interactionState=0; break;
+                case Earth: interactionState=1; break;
+                case Air: interactionState=0; break;
+                case Fire: interactionState=0; break;
+                case Ice: interactionState=2; break;
+                case Steel: interactionState=1; break;
+            }break;
+            case Fire:
+            switch(defF){
+                case Water: interactionState=1; break;
+                case Earth: interactionState=1; break;
+                case Air: interactionState=0; break;
+                case Fire: interactionState=0; break;
+                case Ice: interactionState=2; break;
+                case Steel: interactionState=2; break;
+            }break;
+            case Ice:
+            switch(defF){
+                case Water: interactionState=1; break;
+                case Earth: interactionState=2; break;
+                case Air: interactionState=0; break;
+                case Fire: interactionState=1; break;
+                case Ice: interactionState=1; break;
+                case Steel: interactionState=0; break;
+            }break;
+            case Steel:
+            switch(defF){
+                case Water: interactionState=2; break;
+                case Earth: interactionState=0; break;
+                case Air: interactionState=2; break;
+                case Fire: interactionState=1; break;
+                case Ice: interactionState=0; break;
+                case Steel: interactionState=1; break;
+            }break;
+        }
+        std::cout<<" Ability!\n";
+        if(interactionState==0)
+            std::cout<<"\nNot effective\n";
+        else if(interactionState==1)
+            std::cout<<"\nNot very effective\n";
+        else
+            std::cout<<"\nVery effective\n";
+
+
+        return 1;
     }
 
     void Character::evolveHandle(){
         bool toEvolve=false,badInput=true;
         size_t choice;
-        std::cout<<"Choose creature to evolve!\n";
+
         for(size_t i=0;i<6;i++)
             if(this->getCreature(i).getExperience()>=this->getCreature(i).getMaxExperience())
                 toEvolve=true;
         
         if(toEvolve){
-
+            std::cout<<"Choose creature to evolve!\n";
             while(badInput){
                 std::cout<<this->toString();
 
@@ -189,7 +322,6 @@
                    std::cout<<"\nWrong choice!\n";
                 }
             }
-
         }
         else{
             std::cout<<"You don't have any viable creatures to evolve!";
@@ -205,7 +337,7 @@
  * IDEAS: make enum "state" and "personality" dictating enemy responses
 */
     void Character::enemyResponse(Character &player){
-
+        std::cout<<"responding!";
         if(false){      //1.
 
         }

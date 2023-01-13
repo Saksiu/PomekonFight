@@ -6,7 +6,7 @@
 
 
 	
-	std::vector<Ability*> Creature::abilites;
+	
 	Creature::Creature(){
 		this->name=std::to_string(counter);
 		this->evolution=1;
@@ -29,13 +29,8 @@
 			break;
 		}
 
-		//TEMPORARY!!! START
-
-		this->abilityIndex=forcePointer-1;
-
-		//TEMPORARY!!! END
-
-		this->strength=(rand()%2+2)*10;
+		this->abilityUses=rand()%1+1;
+		this->strength=(rand()%20+20);
 		
 		this->maxLifePoints=(rand()%20+4)*10;
 		this->lifePoints=maxLifePoints;
@@ -43,26 +38,6 @@
 		this->experience=0;
 		this->maxExperience=1000;
 		counter++;
-	}
-
-	int Creature::attack(Creature &attacked){
-		int chance=rand()%99+1;
-
-        if(attacked.getAgility()>=chance){
-            this->experience+=(this->agility*20);
-            return -1;
-        }
-        else{
-            attacked.setLifePoints(attacked.getLifePoints()-this->strength);
-			this->experience+=this->strength*2;
-            return 1;
-        }
-
-	}
-
-	void Creature::specialAttack(Creature &attacked){
-		std::cout<<"\n"<<this->abilityIndex<<"\n";
-		Creature::abilites.at(this->abilityIndex)->use(this->evolution);
 	}
 
 	std::string Creature::getName() const{
@@ -77,6 +52,9 @@
 	int Creature::getMaxLifePoints() const{
 		return maxLifePoints;
 	}
+	int Creature::getAbilityUses() const{
+		return abilityUses;
+	}
 	int Creature::getExperience() const{
 		return experience;
 	}
@@ -87,16 +65,20 @@
 		return agility;
 	}
 
+	Force Creature::getForceType() const{
+		return forceType;
+	}
+
 	std::string Creature::getForceTypeSymbol() const{
 		switch (forceType)
 		{
 		case Water: return "Water";
 			break;
-		case Earth: return "Earth";
+		case Earth: return "Earth ";
 			break;
 		case Air: return "Air  ";
 			break;
-		case Fire: return "Fire";
+		case Fire: return "Fire ";
 			break;
 		case Ice: return "Ice  ";
 			break;
@@ -115,42 +97,49 @@
 	}
 
 	Creature& Creature::setName(std::string newName){
-		std::cout<<"\nchanging "<<name<<" to "<<newName<<"\n";
+		std::cout<<"\nNAME: changing "<<name<<" to "<<newName<<"\n";
 		this->name=newName;
 		return *this;
 	}
 
 	Creature& Creature::addExperience(int expGained){
-		std::cout<<"\nchanging "<<experience<<" to "<<expGained<<"\n";
+		std::cout<<"\nEXP: gained "<<expGained<<"\n";
 		this->experience+=expGained;
 		return *this;
 	}
 
+	Creature& Creature::setAbilityUses(int newUses){
+		std::cout<<"\nUSES LEFT: "<<newUses<<"\n";
+		this->abilityUses=newUses;
+		return *this;
+	}
+
 	Creature& Creature::setAgility(int newAgility){
-		std::cout<<"\nchanging "<<agility<<" to "<<newAgility<<"\n";
+		std::cout<<"\nAGL: changing "<<agility<<" to "<<newAgility<<"\n";
 		this->agility=newAgility;
 		return *this;
 	}
 	
 	Creature& Creature::setLifePoints(int newLifePoints){
-		std::cout<<"\nchanging "<<lifePoints<<" to "<<newLifePoints<<"\n";
+		std::cout<<"\nHP: changing "<<lifePoints<<" to "<<newLifePoints<<"\n";
 		this->lifePoints=newLifePoints;
 		return *this;
 	}
 	Creature& Creature::setMaxLifePoints(int newMaxLifePoints){
-		std::cout<<"\nchanging "<<maxLifePoints<<" to "<<newMaxLifePoints<<"\n";
+		std::cout<<"\nMAX HP: changing "<<maxLifePoints<<" to "<<newMaxLifePoints<<"\n";
 		this->maxLifePoints=newMaxLifePoints;
 		return *this;
 	}
 
 	Creature& Creature::setStrength(int newStrength){
-		std::cout<<"\nchanging "<<strength<<" to "<<newStrength<<"\n";
+		std::cout<<"\nSTR: changing "<<strength<<" to "<<newStrength<<"\n";
 		this->strength=newStrength;
 		return *this;
 	}
 	
 	std::string Creature::toString(){
 		using std::to_string;
-		return "Creature_"+name+"  FRC: "+getForceTypeSymbol()+
-		"  LV: "+to_string(lifePoints)+"  STR: "+to_string(strength)+"  AGL: "+to_string(agility)+"  EXP: "+to_string(experience)+"/"+to_string(maxExperience);
+		return "|Creature_"+name+" | FRC: "+getForceTypeSymbol()+
+		" | HP: "+to_string(lifePoints)+" | STR: "+to_string(strength)+" | AGL: "+
+		to_string(agility)+" | EXP: "+to_string(experience)+"/"+to_string(maxExperience)+"| ";
 	}

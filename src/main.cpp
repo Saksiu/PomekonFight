@@ -83,56 +83,72 @@ void endGame(int state){	//TODO: ENDGAME
 }
 
 
+/**
+ * DESC:
+ * Starts round, takes round number as num
+ * A round is divided by turns, first the player can choose the action, and then the enemy responds to it
+ * A round ends if either all of player's, or the enemy's creatures are dead, 
+ * which the chooseNextValifCreature() func checks
+ * 
+ * At the end of the round all of the player's creatures's health points reset,
+ * and the player returns to the round menu
+*/
 
-
-void startRound(int num){
+void startRound(size_t num){
 	using std::cout,std::cin;
-	char choice;
-
-
-	while(characters[num].chooseNextValidCreature(num)>=0){
-
-		if(characters[0].chooseNextValidCreature(0)<0){
+	int choice;
+	bool badInput,specialAttackPossible;
+	while(characters[num].firstValidCreature(num)>=0){
+		if(characters[0].firstValidCreature(0)<0){
 			endGame(1);
 		}
-		else if(characters[0].chooseNextValidCreature(0)==0){
+		else if(characters[0].getCreatureInFocus().getLifePoints()<=0){
 			cout<<"Your creature died!\n Choose next one to fight!";
 			characters[0].playerChangeCreature();
 		}
+		characters[num].enemyChangeCreatureIfDead(num);
 
 		clearScreen();
 		cout<<"Round No. "<<num;
+		cout<<"\n-----------";
 		cout<<"\nYour creature:\n";
-		cout<<characters[0].getCreature(characters[0].getFocusedCreatureIndex()).toString();
+		cout<<characters[0].getCreatureInFocus().toString();
 
 		cout<<"\n\nEnemy creature:\n";
-		cout<<characters[num].getCreature(characters[num].getFocusedCreatureIndex()).toString();
+		cout<<characters[num].getCreatureInFocus().toString();
 
 		cout<<"\n\nChoose action: \n";
 		cout<<"1.Attack\n2.Special attack\n3.Change creature\n";
-
-		cin>>choice;
-		
-
-		switch (choice){		//TODO: wrong choice handler
-		case '1':
-			std::cout<<(characters[0].attack(characters[num])>0?"Success!":"Missed!");
-			characters[num].enemyResponse(characters[0]);
+		badInput=true;
+		while(badInput){
+			//cin.ignore(1000,'\n');
+            cin>>choice;
+            if(choice>=1&&choice<=3)
+                badInput=false;
+            else
+               cout<<"\nWrong choice!\n";
+		}
+		specialAttackPossible=true;
+		switch (choice){
+		case 1:
+			cout<<"Your";
+			characters[0].attack(characters[num]);
 			break;
-		case '2':
-			characters[0].specialAttack(characters[num]);
-			characters[num].enemyResponse(characters[0]);
+		case 2:
+			cout<<"Your";
+			specialAttackPossible=characters[0].specialAttack(characters[num])==1;
 			break;
-		case '3':
+		case 3:
 			cout<<"Choose creature!\n";
 			characters[0].playerChangeCreature();
-			characters[num].enemyResponse(characters[0]);
 			break;
-		default:
-			cout<<"\nWrong choice, try again: ";
-			cin.clear();
-		break;
 		}
+		
+		if(specialAttackPossible){
+			cout<<"Enemy ";
+			characters[num].enemyResponse(characters[0]);
+		}
+			
 	}
 	//end of round
 	characters[0].playerResetCreatures();
@@ -142,7 +158,7 @@ void gameLoop(){
 	using std::cout,std::cin;
 
 	char choice;
-	int roundNum=0;
+	size_t roundNum=0;
 
 	while(roundNum<4){
 		//Sleep(1000);
@@ -176,12 +192,6 @@ void gameLoop(){
 
 
 void initializeCharacters(){
-	Creature::abilites.push_back(new HydroPump());
-	Creature::abilites.push_back(new Earthquake());
-	Creature::abilites.push_back(new AirBlow());
-	Creature::abilites.push_back(new FireBlast());
-	Creature::abilites.push_back(new IceBeam());
-	Creature::abilites.push_back(new MetalClaw());
 
 	characters[0]=Character("Player",0);
 	for(size_t i=1;i<5;i++)
@@ -195,7 +205,7 @@ void startGame(){
 
 	//Sleep(3000);		//for dramatic effect
 	gameLoop();
-	endGame(0);
+	endGame(2);
 }
 
 
