@@ -1,10 +1,12 @@
 #include <iostream>
 #include <windows.h>
+#include <vector>
 #include <string>
 #include "creature.h"
 
 
-
+	
+	std::vector<Ability*> Creature::abilites;
 	Creature::Creature(){
 		this->name=std::to_string(counter);
 		this->evolution=1;
@@ -26,14 +28,41 @@
 		default: this->forceType=Steel;
 			break;
 		}
-		this->strength=rand()%20+20;
+
+		//TEMPORARY!!! START
+
+		this->abilityIndex=forcePointer-1;
+
+		//TEMPORARY!!! END
+
+		this->strength=(rand()%2+2)*10;
 		
-		this->maxLifePoints=rand()%200+40;
+		this->maxLifePoints=(rand()%20+4)*10;
 		this->lifePoints=maxLifePoints;
 		this->agility=rand()%20+5;
 		this->experience=0;
 		this->maxExperience=1000;
 		counter++;
+	}
+
+	int Creature::attack(Creature &attacked){
+		int chance=rand()%99+1;
+
+        if(attacked.getAgility()>=chance){
+            this->experience+=(this->agility*20);
+            return -1;
+        }
+        else{
+            attacked.setLifePoints(attacked.getLifePoints()-this->strength);
+			this->experience+=this->strength*2;
+            return 1;
+        }
+
+	}
+
+	void Creature::specialAttack(Creature &attacked){
+		std::cout<<"\n"<<this->abilityIndex<<"\n";
+		Creature::abilites.at(this->abilityIndex)->use(this->evolution);
 	}
 
 	std::string Creature::getName() const{

@@ -6,10 +6,16 @@
 #include <limits>
 #include "creature.h"
 #include "character.h"
+
 /**
- * 	PRIORITY:
- * 	
- *  
+ * 	ISSUES:
+ * 	Ability class cant influence any creature object because of potential reference circulation
+ *  Static abilities list in creature class,
+ *  initialized and abilities "created" in main class before initializing characters
+ * 	called in the creature class directly, just as attack function
+ * 	POTENTIALFIX:
+ * 	make abilities reference directly in the character class, as well as the static list to all abilities,
+ * 	call abilities within the character class, potentially(maybe) avoiding self-reference conflict
  * 
  * 	TODO:	
  * 	
@@ -170,6 +176,13 @@ void gameLoop(){
 
 
 void initializeCharacters(){
+	Creature::abilites.push_back(new HydroPump());
+	Creature::abilites.push_back(new Earthquake());
+	Creature::abilites.push_back(new AirBlow());
+	Creature::abilites.push_back(new FireBlast());
+	Creature::abilites.push_back(new IceBeam());
+	Creature::abilites.push_back(new MetalClaw());
+
 	characters[0]=Character("Player",0);
 	for(size_t i=1;i<5;i++)
 		characters[i]=Character("Enemy"+std::to_string(i),i);

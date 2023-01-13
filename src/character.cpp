@@ -138,7 +138,7 @@
                 std::cout<<"\nWrong choice!\n";
         }
 
-        float multiplier=(rand()%20+20)/100.0;
+        float multiplier=(rand()%35+20)/100.0;
 
         if(attributeChoice!=3)  //life
             this->getCreature(creatureChoice).setLifePoints(
@@ -158,23 +158,11 @@
     }
 
     int Character::attack(Character &attacked){
-        int chance=rand()%99+1;
-        if(attacked.getCreatureInFocus().getAgility()>=chance){
-            this->getCreatureInFocus().addExperience(this->getCreatureInFocus().getAgility()*20);
-            return -1;
-        }
-        else{
-            attacked.getCreatureInFocus().setLifePoints(attacked.getCreatureInFocus().getLifePoints()-this->getCreatureInFocus().getStrength());
-
-            this->getCreatureInFocus().addExperience(this->getCreatureInFocus().getStrength()*2);
-            return 1;
-        }
-
-        
+        return this->getCreatureInFocus().attack(attacked.getCreatureInFocus());
     }
 
     void Character::specialAttack(Character &attacked){
-        
+        this->getCreatureInFocus().specialAttack(attacked.getCreatureInFocus());
     }
 
     void Character::evolveHandle(){
