@@ -6,10 +6,24 @@
 
 
 	
-	
-	Creature::Creature(){
+	Creature::Creature(){}
+	Creature::Creature(int enemyNum){
 		this->name=std::to_string(counter);
-		this->evolution=1;
+		float multiplier;
+		switch(enemyNum){
+			case 1:
+				multiplier=1.0;
+				break;
+			case 2: case 3:
+				multiplier=1.2;
+				break;
+			case 4:
+				multiplier=1.4;
+				break;
+			default:
+				multiplier=1.0;
+				break;
+		}
 
 		int forcePointer=rand()%6+1;
 		switch (forcePointer){
@@ -28,13 +42,11 @@
 		default: this->forceType=Steel;
 			break;
 		}
-
-		this->abilityUses=rand()%1+1;
-		this->strength=(rand()%20+20);
-		
-		this->maxLifePoints=(rand()%20+4)*10;
+		this->abilityUses=2;
+		this->strength=(rand()%20+20)*multiplier;
+		this->maxLifePoints=(rand()%20+4)*10*multiplier;
 		this->lifePoints=maxLifePoints;
-		this->agility=rand()%20+5;
+		this->agility=rand()%20+5*multiplier;
 		this->experience=0;
 		this->maxExperience=1000;
 		counter++;
@@ -90,7 +102,6 @@
 	}
 
 	Creature& Creature::resetExperience(){
-		this->evolution++;
 		this->experience-=this->maxExperience;
 		this->maxExperience+=this->maxExperience/2;
 		return *this;
@@ -109,7 +120,7 @@
 	}
 
 	Creature& Creature::setAbilityUses(int newUses){
-		std::cout<<"\nUSES LEFT: "<<newUses<<"\n";
+		std::cout<<"\nAbility: "<<newUses<<" uses left\n";
 		this->abilityUses=newUses;
 		return *this;
 	}
@@ -141,5 +152,5 @@
 		using std::to_string;
 		return "|Creature_"+name+" | FRC: "+getForceTypeSymbol()+
 		" | HP: "+to_string(lifePoints)+" | STR: "+to_string(strength)+" | AGL: "+
-		to_string(agility)+" | EXP: "+to_string(experience)+"/"+to_string(maxExperience)+"| ";
+		to_string(agility)+" | EXP: "+to_string(experience)+"/"+to_string(maxExperience);
 	}
